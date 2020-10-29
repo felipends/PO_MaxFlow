@@ -86,12 +86,8 @@ function solve(instance::Instance)
     for i in arc_vertices
         inFlow = 0
         outFlow = 0
-        if i in arc_vertices
-            outFlow = sum(x[i, j] for j in arc_vertices if (i, j) in  arc_pairs)
-        end
-        if i in arc_vertices
-            inFlow = sum(x[j, i] for j in arc_vertices if (j, i) in  arc_pairs)
-        end
+        outFlow = sum(x[i, j] for j in arc_vertices if (i, j) in  arc_pairs)
+        inFlow = sum(x[j, i] for j in arc_vertices if (j, i) in  arc_pairs)
         @constraint(PFM_model, (outFlow - inFlow) == 0)
     end
 
