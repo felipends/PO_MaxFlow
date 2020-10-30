@@ -50,7 +50,7 @@ function readInstance(instanceFilePath::String)
         count = count + 1
     end
 
-    # push!(arcs, Arc(t, s, typemax(Int64)))
+    push!(arcs, Arc(t, s, typemax(Int64)))
     return Instance(n, m, s, t, arcs)
 end
 
@@ -81,16 +81,14 @@ function solve(instance::Instance)
        set_upper_bound(x[arc.i, arc.j], arc.c) 
     end
 
-    @objective(PFM_model, Max, sum(x[arc.i, arc.j] for arc in instance.arcs if arc.j == instance.t))
+    @objective(PFM_model, Min, -x[instance.t, instance.s])
 
     for i in arc_vertices
-        if i != instance.t && i != instance.s
-            inFlow = 0
-            outFlow = 0
-            outFlow = sum(x[i, j] for j in arc_vertices if (i, j) in  arc_pairs)
-            inFlow = sum(x[j, i] for j in arc_vertices if (j, i) in  arc_pairs)
-            @constraint(PFM_model, (outFlow - inFlow) == 0)
-        end
+        inFlow = 0
+        outFlow = 0
+        outFlow = sum(x[i, j] for j in arc_vertices if (i, j) in  arc_pairs)
+        inFlow = sum(x[j, i] for j in arc_vertices if (j, i) in  arc_pairs)
+        @constraint(PFM_model, (outFlow - inFlow) == 0)
     end
 
     JuMP.optimize!(PFM_model)
