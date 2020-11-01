@@ -104,6 +104,8 @@ function solve(instance::Instance)
     return Solution(objective_value(PFM_model), arcsSolution)
 end
 
-instance = readInstance("exercise_instance.txt")
+# Caminho para a instância a ser executada
+instancePath = "exercise_instance.txt"
+instance = readInstance(instancePath)
 z = solve(instance)
 println(z)
