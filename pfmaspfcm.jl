@@ -11,7 +11,7 @@ struct Instance
     m::Int64
     s::Int64
     t::Int64
-    arcs::Array{Arc, 1}
+    arcs::Array{Arc,1}
 end
 
 struct SolutionArc
@@ -22,7 +22,7 @@ end
 
 struct Solution
     v::Int64
-    arcs::Array{SolutionArc, 1}
+    arcs::Array{SolutionArc,1}
 end
 
 function readInstance(instanceFilePath::String)
@@ -78,7 +78,7 @@ function solve(instance::Instance)
 
     @variable(PFM_model, 0 <= x[i=1:instance.n, j=1:instance.n;(i, j) in arc_pairs], integer = true)    
     for arc in instance.arcs
-       set_upper_bound(x[arc.i, arc.j], arc.c) 
+        set_upper_bound(x[arc.i, arc.j], arc.c) 
     end
 
     @objective(PFM_model, Min, -x[instance.t, instance.s])
@@ -105,7 +105,7 @@ function solve(instance::Instance)
 end
 
 # Caminho para a instância a ser executada
-instancePath = "exercise_instance.txt"
+instancePath = "instancias/instance4.txt"
 instance = readInstance(instancePath)
 z = solve(instance)
 println(z)

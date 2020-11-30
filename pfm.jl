@@ -58,19 +58,6 @@ function solve(instance::Instance)
     PFM_model = Model(Cbc.Optimizer)
     set_optimizer_attribute(PFM_model, "logLevel", 1)
 
-    arc_vertices = []
-    for arc in instance.arcs
-        if isempty(arc_vertices)
-            push!(arc_vertices, arc.i)
-            push!(arc_vertices, arc.j)
-        elseif !isassigned(arc_vertices, arc.i)
-            push!(arc_vertices, arc.i)
-        end
-        if !isassigned(arc_vertices, arc.j)
-            push!(arc_vertices, arc.j)
-        end
-    end
-
     arc_pairs = []
     for arc in instance.arcs
         push!(arc_pairs, (arc.i, arc.j))
@@ -83,12 +70,12 @@ function solve(instance::Instance)
 
     @objective(PFM_model, Max, sum(x[arc.i, arc.j] for arc in instance.arcs if arc.j == instance.t))
 
-    for i in arc_vertices
+    for i in 1:instance.n
         if i != instance.t && i != instance.s
             inFlow = 0
             outFlow = 0
-            outFlow = sum(x[i, j] for j in arc_vertices if (i, j) in  arc_pairs)
-            inFlow = sum(x[j, i] for j in arc_vertices if (j, i) in  arc_pairs)
+            outFlow = sum(x[i, j] for j in 1:instance.n if (i, j) in  arc_pairs)
+            inFlow = sum(x[j, i] for j in 1:instance.n if (j, i) in  arc_pairs)
             @constraint(PFM_model, (outFlow - inFlow) == 0)
         end
     end
@@ -107,7 +94,7 @@ function solve(instance::Instance)
 end
 
 # Caminho para a instância a ser executada
-instancePath = "exercise_instance.txt"
+instancePath = "instancias/instance7.txt"
 instance = readInstance(instancePath)
 z = solve(instance)
 println(z)
